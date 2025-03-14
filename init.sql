@@ -1,3 +1,6 @@
+create database aximos_dashboard;
+use aximos_dashboard;
+
 -- 1. Admins table: Used for admin login and authentication.
 CREATE TABLE admins (
     id INT AUTO_INCREMENT PRIMARY KEY,
