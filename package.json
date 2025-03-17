@@ -20,8 +20,10 @@
     "server": "nodemon index.js"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.13.0"
   },
   "devDependencies": {
