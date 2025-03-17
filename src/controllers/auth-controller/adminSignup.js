@@ -16,6 +16,7 @@ const adminSignUp = (async(req,res)=>{
             }
             const [result] = await pool.query(createQuery,[email,await getHashedPassword(password)])
             if(result){
+                //TODO:Send Email Notification 
                 return res.status(201).json({Message:"Admin Created"})
             }
             else{
