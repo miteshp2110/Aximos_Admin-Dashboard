@@ -10,6 +10,19 @@ CREATE TABLE admins (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+create table if not exists otp (
+    email varchar(255) primary key ,
+    code int not null ,
+    created_at timestamp default current_timestamp,
+
+    foreign key(email) references admins(email)
+);
+
+create event delete_expired_otp
+on schedule every 1 minute
+do
+    delete from otp where created_at < now() - interval 1 minute ;
+
 -- 2. Users table: Stores registered customers.
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
