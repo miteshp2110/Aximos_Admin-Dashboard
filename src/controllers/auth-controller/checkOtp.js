@@ -28,7 +28,6 @@ const checkOtp = (async(req,res)=>{
         console.error(err)
         return res.status(500).json({Message:"Server Error."})
     }
-    return res.send("otp")
 })
 
 module.exports = checkOtp
