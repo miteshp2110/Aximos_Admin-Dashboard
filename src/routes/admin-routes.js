@@ -15,7 +15,7 @@ router.get("/users", checkAdmin, getAllUsers);
 router.put("/users/:id", checkAdmin, updateUserStatus);
 
 // Service Routes
-router.get("/services", checkAdmin, getAllServices);
+router.get("/services",checkAdmin, getAllServices);
 router.post("/services", checkAdmin, addService);
 
 // Order Routes
