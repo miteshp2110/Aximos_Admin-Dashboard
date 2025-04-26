@@ -6,11 +6,12 @@ const checkAdmin = require("../middlewares/checkAdmin");
 // Import controllers
 const { getAllUsers, updateUserStatus } = require("../controllers/admin-controller/userController");
 const { getAllServices, addService } = require("../controllers/admin-controller/serviceController");
-const { getAllOrders, updateOrderStatus } = require("../controllers/admin-controller/orderController");
+const { getAllOrders, updateOrderStatus, getTotalOrders } = require("../controllers/admin-controller/orderController");
 const { getAllDrivers, updateDriverStatus } = require("../controllers/admin-controller/driverController");
 const {getStats} = require("../controllers/admin-controller/dashboardController");
 
 // User Routes
+router.get('/orders/total', getTotalOrders);
 router.get("/users", checkAdmin, getAllUsers);
 router.put("/users/:id", checkAdmin, updateUserStatus);
 

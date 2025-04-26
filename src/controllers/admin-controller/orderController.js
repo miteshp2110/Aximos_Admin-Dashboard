@@ -32,7 +32,22 @@ const updateOrderStatus = async (req, res) => {
     }
 };
 
+// Get total number of orders
+const getTotalOrders = async (req, res) => {
+    try {
+        const connection = await pool.getConnection();
+        const [result] = await connection.query("SELECT COUNT(*) AS total FROM orders");
+        connection.release();
+
+        res.json({ totalOrders: result[0].total });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
 module.exports = {
     getAllOrders,
-    updateOrderStatus
+    updateOrderStatus,
+    getTotalOrders
 };
