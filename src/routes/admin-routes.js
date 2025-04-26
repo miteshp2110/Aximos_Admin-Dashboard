@@ -11,7 +11,7 @@ const { getAllDrivers, updateDriverStatus } = require("../controllers/admin-cont
 const {getStats} = require("../controllers/admin-controller/dashboardController");
 
 // User Routes
-router.get('/orders/total', getTotalOrders);
+router.get('/orders/total', checkAdmin, getTotalOrders);
 router.get("/users", checkAdmin, getAllUsers);
 router.put("/users/:id", checkAdmin, updateUserStatus);
 
