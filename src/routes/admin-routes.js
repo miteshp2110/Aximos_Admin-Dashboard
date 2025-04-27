@@ -9,6 +9,7 @@ const { getAllServices, addService } = require("../controllers/admin-controller/
 const { getAllOrders, updateOrderStatus, getTotalOrders, getTotalRevenue,getRecentOrders, getTodaysPickups } = require("../controllers/admin-controller/orderController");
 const { getAllDrivers, updateDriverStatus ,getActiveDrivers, getInactiveDrivers} = require("../controllers/admin-controller/driverController");
 const {getStats} = require("../controllers/admin-controller/dashboardController");
+const { getActivePromotions, getInactivePromotions } = require("../controllers/admin-controller/promotionController");  
 
 // User Routes
 router.get("/users", checkAdmin, getAllUsers);
@@ -30,8 +31,12 @@ router.get('/orders/today-pickups', getTodaysPickups);
 // Driver Routes 
 router.get("/drivers", checkAdmin,getAllDrivers);
 router.put("/drivers/:id", checkAdmin, updateDriverStatus);
-router.get('/drivers/active', getActiveDrivers);
-router.get('/drivers/inactive', getInactiveDrivers);
+router.get('/drivers/active', checkAdmin, getActiveDrivers);
+router.get('/drivers/inactive', checkAdmin, getInactiveDrivers);
+
+// Promotions Routes
+router.get('/promotions/active',checkAdmin, getActivePromotions);
+router.get('/promotions/inactive', checkAdmin, getInactivePromotions);
 
 // Dashboard Stats Route
 router.get("/stats", checkAdmin, getStats);
