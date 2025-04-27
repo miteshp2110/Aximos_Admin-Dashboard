@@ -3,15 +3,16 @@ const { pool } = require("../../config/db");
 
 // Get all drivers
 const getAllDrivers = async (req, res) => {
+    let connection;
     try {
-        const connection = await pool.getConnection();
+        connection = await pool.getConnection();
         const [drivers] = await connection.query("SELECT * FROM drivers");
-        connection.release();
-
-        res.json(drivers);
+        res.json({ success: true, data: drivers });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
     }
 };
 
@@ -19,20 +20,52 @@ const getAllDrivers = async (req, res) => {
 const updateDriverStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
-
+    let connection;
     try {
-        const connection = await pool.getConnection();
-        await connection.query("UPDATE drivers SET status = ? WHERE id = ?", [status, id]);
-        connection.release();
-
-        res.json({ message: "Driver status updated successfully" });
+        connection = await pool.getConnection();
+        await connection.query("UPDATE vans SET status = ? WHERE id = ?", [status, id]);
+        res.json({ success: true, message: "Driver status updated successfully" });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
+    }
+};
+
+// Get active drivers (status = 1)
+const getActiveDrivers = async (req, res) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const [activeDrivers] = await connection.query("SELECT * FROM vans WHERE status = 1");
+        res.json({ success: true, data: activeDrivers });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
+    }
+};
+
+// Get inactive drivers (status != 1)
+const getInactiveDrivers = async (req, res) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const [inactiveDrivers] = await connection.query("SELECT * FROM drivers WHERE status != 1");
+        res.json({ success: true, data: inactiveDrivers });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
     }
 };
 
 module.exports = {
     getAllDrivers,
-    updateDriverStatus
+    updateDriverStatus,
+    getActiveDrivers,
+    getInactiveDrivers
 };

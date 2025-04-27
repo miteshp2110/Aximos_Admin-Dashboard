@@ -7,7 +7,7 @@ const checkAdmin = require("../middlewares/checkAdmin");
 const { getAllUsers, updateUserStatus ,getTotalUsers} = require("../controllers/admin-controller/userController");
 const { getAllServices, addService } = require("../controllers/admin-controller/serviceController");
 const { getAllOrders, updateOrderStatus, getTotalOrders, getTotalRevenue,getRecentOrders, getTodaysPickups } = require("../controllers/admin-controller/orderController");
-const { getAllDrivers, updateDriverStatus } = require("../controllers/admin-controller/driverController");
+const { getAllDrivers, updateDriverStatus ,getActiveDrivers, getInactiveDrivers} = require("../controllers/admin-controller/driverController");
 const {getStats} = require("../controllers/admin-controller/dashboardController");
 
 // User Routes
@@ -28,8 +28,10 @@ router.get('/orders/recent', checkAdmin, getRecentOrders);
 router.get('/orders/today-pickups', getTodaysPickups);
 
 // Driver Routes 
-router.get("/drivers", checkAdmin, getAllDrivers);
+router.get("/drivers", checkAdmin,getAllDrivers);
 router.put("/drivers/:id", checkAdmin, updateDriverStatus);
+router.get('/drivers/active', getActiveDrivers);
+router.get('/drivers/inactive', getInactiveDrivers);
 
 // Dashboard Stats Route
 router.get("/stats", checkAdmin, getStats);
