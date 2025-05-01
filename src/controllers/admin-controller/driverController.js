@@ -1,13 +1,12 @@
-// controllers/driverController.js
 const { pool } = require("../../config/db");
 
-// Get all drivers
+// Get all vans (drivers)
 const getAllDrivers = async (req, res) => {
     let connection;
     try {
         connection = await pool.getConnection();
-        const [drivers] = await connection.query("SELECT * FROM drivers");
-        res.json({ success: true, data: drivers });
+        const [vans] = await connection.query("SELECT * FROM vans");
+        res.json({ success: true, data: vans });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -16,7 +15,7 @@ const getAllDrivers = async (req, res) => {
     }
 };
 
-// Update driver status
+// Update van status
 const updateDriverStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
@@ -24,7 +23,7 @@ const updateDriverStatus = async (req, res) => {
     try {
         connection = await pool.getConnection();
         await connection.query("UPDATE vans SET status = ? WHERE id = ?", [status, id]);
-        res.json({ success: true, message: "Driver status updated successfully" });
+        res.json({ success: true, message: "Van status updated successfully" });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -33,13 +32,13 @@ const updateDriverStatus = async (req, res) => {
     }
 };
 
-// Get active drivers (status = 1)
+// Get active vans (status = 1)
 const getActiveDrivers = async (req, res) => {
     let connection;
     try {
         connection = await pool.getConnection();
-        const [activeDrivers] = await connection.query("SELECT * FROM vans WHERE status = 1");
-        res.json({ success: true, data: activeDrivers });
+        const [activeVans] = await connection.query("SELECT * FROM vans WHERE status = 1");
+        res.json({ success: true, data: activeVans });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -48,13 +47,13 @@ const getActiveDrivers = async (req, res) => {
     }
 };
 
-// Get inactive drivers (status != 1)
+// Get inactive vans (status != 1)
 const getInactiveDrivers = async (req, res) => {
     let connection;
     try {
         connection = await pool.getConnection();
-        const [inactiveDrivers] = await connection.query("SELECT * FROM drivers WHERE status != 1");
-        res.json({ success: true, data: inactiveDrivers });
+        const [inactiveVans] = await connection.query("SELECT * FROM vans WHERE status != 1");
+        res.json({ success: true, data: inactiveVans });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: "Internal Server Error" });

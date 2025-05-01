@@ -1,40 +1,4 @@
-// controllers/orderController.js
 const { pool } = require("../../config/db");
-
-// Get orders to be picked up today
-const getTodaysPickups = async (req, res) => {
-    let connection;
-    try {
-        connection = await pool.getConnection();
-        const [orders] = await connection.query(
-            "SELECT * FROM orders WHERE DATE(pickup_date) = CURDATE()"
-        );
-        res.json({ success: true, todaysPickups: orders });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
-    } finally {
-        if (connection) connection.release();
-    }
-};
-
-// Get top 5 recent orders
-const getRecentOrders = async (req, res) => {
-    let connection;
-    try {
-        connection = await pool.getConnection();
-        const [orders] = await connection.query(
-            "SELECT * FROM orders ORDER BY createdAt DESC LIMIT 5"
-        );
-        res.json({ success: true, recentOrders: orders });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
-    } finally {
-        if (connection) connection.release();
-    }
-};
-
 
 // Get all orders
 const getAllOrders = async (req, res) => {
@@ -68,6 +32,40 @@ const updateOrderStatus = async (req, res) => {
     }
 };
 
+// Get today's pickups
+const getTodaysPickups = async (req, res) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const [orders] = await connection.query(
+            "SELECT * FROM orders WHERE DATE(pickup_date) = CURDATE()"
+        );
+        res.json({ success: true, todaysPickups: orders });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
+    }
+};
+
+// Get top 5 recent orders
+const getRecentOrders = async (req, res) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const [orders] = await connection.query(
+            "SELECT * FROM orders ORDER BY createdAt DESC LIMIT 5"
+        );
+        res.json({ success: true, recentOrders: orders });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
+    }
+};
+
 // Get total number of orders
 const getTotalOrders = async (req, res) => {
     let connection;
@@ -83,12 +81,14 @@ const getTotalOrders = async (req, res) => {
     }
 };
 
-// Get total revenue
+// Get total revenue from completed orders
 const getTotalRevenue = async (req, res) => {
     let connection;
     try {
         connection = await pool.getConnection();
-        const [result] = await connection.query("SELECT IFNULL(SUM(order_total), 0) AS total_revenue FROM orders");
+        const [result] = await connection.query(
+            "SELECT IFNULL(SUM(order_total), 0) AS total_revenue FROM orders WHERE order_status = '4'"
+        );
         res.json({ success: true, totalRevenue: result[0].total_revenue });
     } catch (err) {
         console.error(err);
@@ -106,4 +106,3 @@ module.exports = {
     getRecentOrders,
     getTodaysPickups
 };
- 

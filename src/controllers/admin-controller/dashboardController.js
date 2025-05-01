@@ -4,11 +4,23 @@ const { pool } = require("../../config/db");
 const getStats = async (req, res) => {
     try {
         const connection = await pool.getConnection();
+
         const [[orders], [activeOrders], [revenue]] = await Promise.all([
             connection.query("SELECT COUNT(*) AS totalOrders FROM orders"),
-            connection.query("SELECT COUNT(*) AS activeOrders FROM orders WHERE order_status = 'active'"),
-            connection.query("SELECT SUM(total_amount) AS revenue FROM orders WHERE order_status = 'completed'")
+            connection.query(`
+                SELECT COUNT(*) AS activeOrders 
+                FROM orders o
+                JOIN order_status_names s ON o.order_status = s.id
+                WHERE s.statusName = 'active'
+            `),
+            connection.query(`
+                SELECT SUM(order_total) AS revenue 
+                FROM orders o
+                JOIN order_status_names s ON o.order_status = s.id
+                WHERE s.statusName = 'completed'
+            `)
         ]);
+
         connection.release();
 
         res.json({

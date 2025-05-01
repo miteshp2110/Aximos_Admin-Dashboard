@@ -1,4 +1,3 @@
-// controllers/userController.js
 const { pool } = require("../../config/db");
 
 // Get all users
@@ -6,7 +5,7 @@ const getAllUsers = async (req, res) => {
     let connection;
     try {
         connection = await pool.getConnection();
-        const [users] = await connection.query("SELECT * FROM users");
+        const [users] = await connection.query("SELECT id,  fullName, email, password,authType,profileUrl,createdAt FROM users"); // Explicitly select necessary fields
         res.json({ success: true, data: users });
     } catch (err) {
         console.error(err);
@@ -23,7 +22,12 @@ const updateUserStatus = async (req, res) => {
     let connection;
     try {
         connection = await pool.getConnection();
-        await connection.query("UPDATE users SET status = ? WHERE id = ?", [status, id]);
+        const [result] = await connection.query("UPDATE users SET status = ? WHERE id = ?", [status, id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
         res.json({ success: true, message: "User status updated successfully" });
     } catch (err) {
         console.error(err);

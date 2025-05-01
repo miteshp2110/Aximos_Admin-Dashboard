@@ -12,33 +12,38 @@ const {getStats} = require("../controllers/admin-controller/dashboardController"
 const { getActivePromotions, getInactivePromotions } = require("../controllers/admin-controller/promotionController");  
 
 // User Routes
-router.get("/users", checkAdmin, getAllUsers);
-router.put("/users/:id", checkAdmin, updateUserStatus);
-router.get('/users/total',checkAdmin, getTotalUsers);
+router.get("/users", checkAdmin,getAllUsers);  //working
+router.get('/users/total', checkAdmin, getTotalUsers);  //working
+// router.put("/users/:id", updateUserStatus);  //currently not used in the frontend
+
 
 // Service Routes
-router.get("/services",checkAdmin, getAllServices);
-router.post("/services", checkAdmin, addService);
+router.get("/services",checkAdmin, getAllServices); //working
+router.post("/services", checkAdmin, addService); //working
 
 // Order Routes
-router.get("/orders", checkAdmin, getAllOrders);
-router.put("/orders/:id", checkAdmin, updateOrderStatus); 
-router.get('/orders/total', checkAdmin, getTotalOrders);
-router.get('/orders/total-revenue', checkAdmin,getTotalRevenue);
-router.get('/orders/recent', checkAdmin, getRecentOrders);
-router.get('/orders/today-pickups', getTodaysPickups);
+router.get("/orders", checkAdmin, getAllOrders); //working
+router.put("/orders/:id", checkAdmin, updateOrderStatus); //working
+router.get('/orders/total', checkAdmin, getTotalOrders);    //working
+router.get('/orders/total-revenue', checkAdmin,getTotalRevenue);    //working
+router.get('/orders/recent', checkAdmin, getRecentOrders);  //working
+router.get('/orders/today-pickups',checkAdmin, getTodaysPickups);   //working
+
+
 
 // Driver Routes 
-router.get("/drivers", checkAdmin,getAllDrivers);
-router.put("/drivers/:id", checkAdmin, updateDriverStatus);
-router.get('/drivers/active', checkAdmin, getActiveDrivers);
-router.get('/drivers/inactive', checkAdmin, getInactiveDrivers);
+router.get("/drivers", checkAdmin,getAllDrivers);  //working
+router.put("/drivers/:id", checkAdmin, updateDriverStatus); //working
+router.get('/drivers/active', checkAdmin, getActiveDrivers);    //working
+router.get('/drivers/inactive', checkAdmin, getInactiveDrivers);    //working
+
+
 
 // Promotions Routes
-router.get('/promotions/active',checkAdmin, getActivePromotions);
-router.get('/promotions/inactive', checkAdmin, getInactivePromotions);
+router.get('/promotions/active',checkAdmin, getActivePromotions);  //working
+router.get('/promotions/inactive', checkAdmin, getInactivePromotions);  //working
 
 // Dashboard Stats Route
-router.get("/stats", checkAdmin, getStats);
+router.get("/stats", checkAdmin, getStats);  //working
 
 module.exports = router;
