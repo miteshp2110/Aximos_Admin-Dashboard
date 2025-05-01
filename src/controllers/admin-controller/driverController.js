@@ -1,5 +1,29 @@
 const { pool } = require("../../config/db");
 
+const addDriver = async (req, res) => {
+    const { region_id, van_number, phone, status } = req.body;
+
+    if (!region_id || !van_number || !phone || status === undefined) {
+        return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const createdAt = new Date(); // or use CURRENT_TIMESTAMP in SQL
+        await connection.query(
+            "INSERT INTO vans (region_id, van_number, phone, status, createdAt) VALUES (?, ?, ?, ?, ?)",
+            [region_id, van_number, phone, status, createdAt]
+        );
+        res.json({ success: true, message: "Driver added successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
+    }
+};
+
 // Get all vans (drivers)
 const getAllDrivers = async (req, res) => {
     let connection;
@@ -66,5 +90,6 @@ module.exports = {
     getAllDrivers,
     updateDriverStatus,
     getActiveDrivers,
-    getInactiveDrivers
+    getInactiveDrivers,
+    addDriver
 };
