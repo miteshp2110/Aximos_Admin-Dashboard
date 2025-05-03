@@ -1,4 +1,5 @@
 const { pool } = require("../../config/db");
+const { formatDistanceToNow } = require("date-fns");
 
 // Get all orders
 const getAllOrders = async (req, res) => {
@@ -55,9 +56,28 @@ const getRecentOrders = async (req, res) => {
     try {
         connection = await pool.getConnection();
         const [orders] = await connection.query(
-            "SELECT * FROM orders ORDER BY createdAt DESC LIMIT 5"
+            `SELECT 
+                o.id AS order_id,
+                o.order_total,
+                o.createdAt,
+                GROUP_CONCAT(DISTINCT c.name SEPARATOR ', ') AS categories
+             FROM orders o
+             JOIN order_items oi ON o.id = oi.order_id
+             JOIN items i ON oi.item_id = i.id
+             JOIN category c ON i.category_id = c.id
+             GROUP BY o.id
+             ORDER BY o.createdAt DESC
+             LIMIT 5`
         );
-        res.json({ success: true, recentOrders: orders });
+
+        const formattedOrders = orders.map(order => ({
+            order_id: order.order_id,
+            amount: order.order_total,
+            categories: order.categories,
+            timestamp: formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })
+        }));
+
+        res.json({ success: true, recentOrders: formattedOrders });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -65,6 +85,7 @@ const getRecentOrders = async (req, res) => {
         if (connection) connection.release();
     }
 };
+
 
 // Get total number of orders
 const getTotalOrders = async (req, res) => {

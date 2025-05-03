@@ -14,7 +14,7 @@ const { getAllRegions, addRegion, updateRegion, deleteRegion } = require("../con
 
 // User Routes
 router.get("/users", checkAdmin,getAllUsers);  //working
-router.get('/users/total', checkAdmin, getTotalUsers);  //working
+router.get('/total-users', getTotalUsers);  //working
 // router.put("/users/:id", updateUserStatus);  //currently not used in the frontend
 
 
@@ -23,18 +23,18 @@ router.get("/services",checkAdmin, getAllServices); //working
 router.post("/services", checkAdmin, addService); //working
 
 // Order Routes
-router.get("/orders", checkAdmin, getAllOrders); //working
+router.get("/orders",getAllOrders); //working
 router.put("/orders/:id", checkAdmin, updateOrderStatus); //working
-router.get('/orders/total', checkAdmin, getTotalOrders);    //working
-router.get('/orders/total-revenue', checkAdmin,getTotalRevenue);    //working
-router.get('/orders/recent', checkAdmin, getRecentOrders);  //working
+router.get('/total-orders',getTotalOrders);    //working
+router.get('/orders-total-revenue',getTotalRevenue);    //working
+router.get('/orders-recent', getRecentOrders);  //working
 router.get('/orders/today-pickups',checkAdmin, getTodaysPickups);   //working
 
 // Driver Routes 
 router.post("/addDriver", checkAdmin, addDriver); //working
 router.get("/drivers", checkAdmin,getAllDrivers);  //working
 router.put("/drivers/:id", checkAdmin, updateDriverStatus); //working
-router.get('/drivers/active', checkAdmin, getActiveDrivers);    //working
+router.get('/active-drivers', getActiveDrivers);    //working
 router.get('/drivers/inactive', checkAdmin, getInactiveDrivers);    //working
 
 
