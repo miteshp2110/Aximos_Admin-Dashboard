@@ -209,9 +209,29 @@ const getAllPromotionsWithUsage = async (req, res) => {
         if (connection) connection.release();
     }
 };
-
-
-
+// Get all promotions with selected fields (name, code, discount, validity)
+const getPromotionSummary = async (req, res) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const [promotions] = await connection.query(`
+            SELECT 
+                title AS promotionName,
+                coupon_code AS promotionCode,
+                discount_percentage AS discountPercentage,
+                DATE_FORMAT(valid_from, '%Y-%m-%d') AS validFrom,
+                DATE_FORMAT(valid_to, '%Y-%m-%d') AS validTo
+            FROM promotions
+            ORDER BY valid_to DESC
+        `);
+        res.json({ success: true, data: promotions });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
+    }
+};
 
 
 module.exports = {
@@ -220,5 +240,6 @@ module.exports = {
     addPromotion,
     updatePromotion,
     deletePromotion,
-    getAllPromotionsWithUsage
+    getAllPromotionsWithUsage,
+    getPromotionSummary
 };
