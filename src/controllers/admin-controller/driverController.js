@@ -13,7 +13,7 @@ const addDriver = async (req, res) => {
         const createdAt = new Date(); // or use CURRENT_TIMESTAMP in SQL
         await connection.query(
             "INSERT INTO vans (region_id, van_number, phone, status, createdAt) VALUES (?, ?, ?, ?, ?)",
-            [region_id, van_number, phone, status, createdAt]
+            [region_id, van_number, phone, status==="active"?1:0, createdAt]
         );
         res.json({ success: true, message: "Driver added successfully" });
     } catch (err) {
@@ -29,7 +29,11 @@ const getAllDrivers = async (req, res) => {
     let connection;
     try {
         connection = await pool.getConnection();
-        const [vans] = await connection.query("SELECT * FROM vans");
+        const [vans] = await connection.query("SELECT vans.id as id , vans.van_number as regNo , vans.region_id as regionId , regions.name as regionName , vans.phone as phone , vans.status as status FROM vans join regions where vans.region_id = regions.id");
+
+        vans.forEach(van => {
+            van.status = van.status === 1 ? "active" : "inactive"; 
+        })
         res.json({ success: true, data: vans });
     } catch (err) {
         console.error(err);
@@ -47,6 +51,23 @@ const updateDriverStatus = async (req, res) => {
     try {
         connection = await pool.getConnection();
         await connection.query("UPDATE vans SET status = ? WHERE id = ?", [status, id]);
+        res.json({ success: true, message: "Van status updated successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
+    }
+};
+
+// Update van status
+const updateDriver = async (req, res) => {
+    const { id } = req.params;
+    const { status, phone , regNo , regionId } = req.body;
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        await connection.query("UPDATE vans SET status = ? , region_id = ? , van_number = ? , phone = ?  WHERE id = ?", [status,regionId,regNo,phone, id]);
         res.json({ success: true, message: "Van status updated successfully" });
     } catch (err) {
         console.error(err);
@@ -91,5 +112,6 @@ module.exports = {
     updateDriverStatus,
     getActiveDrivers,
     getInactiveDrivers,
-    addDriver
+    addDriver,
+    updateDriver
 };
