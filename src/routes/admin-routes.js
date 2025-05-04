@@ -6,7 +6,7 @@ const checkAdmin = require("../middlewares/checkAdmin");
 // Import controllers
 const { getAllUsers, updateUserStatus ,getTotalUsers} = require("../controllers/admin-controller/userController");
 const { getAllServices, addService } = require("../controllers/admin-controller/serviceController");
-const { getAllOrders, updateOrderStatus, getTotalOrders, getTotalRevenue,getRecentOrders, getTodaysPickups } = require("../controllers/admin-controller/orderController");
+const { getAllOrders, updateOrderStatus, getTotalOrders, getTotalRevenue,getRecentOrders, getTodaysPickups, getAllOrdersDetailed } = require("../controllers/admin-controller/orderController");
 const { addDriver, getAllDrivers, updateDriverStatus ,getActiveDrivers, getInactiveDrivers} = require("../controllers/admin-controller/driverController");
 const {getStats} = require("../controllers/admin-controller/dashboardController");
 const { getActivePromotions, getInactivePromotions, addPromotion ,updatePromotion, deletePromotion, getAllPromotionsWithUsage} = require("../controllers/admin-controller/promotionController");  
@@ -24,6 +24,7 @@ router.post("/services", checkAdmin, addService); //working
 
 // Order Routes
 router.get("/orders",getAllOrders); //working
+router.get("/orders/detail",getAllOrdersDetailed); //working
 router.put("/orders/:id", checkAdmin, updateOrderStatus); //working
 router.get('/total-orders',getTotalOrders);    //working
 router.get('/orders-total-revenue',getTotalRevenue);    //working
