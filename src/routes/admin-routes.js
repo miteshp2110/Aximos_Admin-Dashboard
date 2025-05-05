@@ -55,8 +55,8 @@ router.get("/stats", checkAdmin, getStats);  //working
 
 // Region Routes
 router.get("/regions", getAllRegions); //working
-router.post("/regions", checkAdmin, addRegion); //working
-router.put("/regions/:id", checkAdmin, updateRegion); //working
+router.post("/regions", addRegion); //working
+router.put("/regions/:id", updateRegion); //working
 router.delete("/regions/:id", deleteRegion); //working
 
 

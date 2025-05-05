@@ -13,6 +13,11 @@ const deleteRegion = async (req, res) => {
     try {
         connection = await pool.getConnection();
 
+        const [isRegionBinded] = await connection.query("select count(id) as total from vans where region_id = ?", [id]);
+
+        if(isRegionBinded[0].total > 0) {
+            return res.status(400).json({ success: false, message: "Region is bound to a driver."});
+        }
         const [result] = await connection.query("DELETE FROM regions WHERE id = ?", [id]);
 
         if (result.affectedRows === 0) {
@@ -33,7 +38,11 @@ const getAllRegions = async (req, res) => {
     let connection;
     try {
         connection = await pool.getConnection();
-        const [regions] = await connection.query("SELECT * FROM regions");
+        const [regions] = await connection.query("SELECT id,name,description,latitude,longitude,thresholdDistance as threshold FROM regions");
+        regions.forEach(region => {
+            region.latitude = parseFloat(region.latitude);
+            region.longitude = parseFloat(region.longitude);
+        })
         res.json({ success: true, data: regions });
     } catch (err) {
         console.error(err);
@@ -60,7 +69,7 @@ const addRegion = async (req, res) => {
         await connection.query(
             `INSERT INTO regions (name, description, latitude, longitude, thresholdDistance) 
              VALUES (?, ?, ?, ?, ?)`,
-            [name, description || null, latitude, longitude, thresholdDistance]
+            [name, description || null, latitude.toString(), longitude.toString(), thresholdDistance]
         );
         res.json({ success: true, message: "Region added successfully" });
     } catch (err) {
@@ -89,7 +98,7 @@ const updateRegion = async (req, res) => {
         await connection.query(
             `UPDATE regions SET name = ?, description = ?, latitude = ?, longitude = ?, thresholdDistance = ?
              WHERE id = ?`,
-            [name, description || null, latitude, longitude, thresholdDistance, id]
+            [name, description || null, latitude.toString(), longitude.toString(), thresholdDistance, id]
         );
         res.json({ success: true, message: "Region updated successfully" });
     } catch (err) {
