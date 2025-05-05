@@ -9,8 +9,9 @@ const { getAllServices, addService } = require("../controllers/admin-controller/
 const { getAllOrders, updateOrderStatus, getTotalOrders, getTotalRevenue,getRecentOrders, getTodaysPickups, getAllOrdersDetailed } = require("../controllers/admin-controller/orderController");
 const { addDriver, getAllDrivers, updateDriverStatus ,getActiveDrivers, getInactiveDrivers, updateDriver} = require("../controllers/admin-controller/driverController");
 const {getStats} = require("../controllers/admin-controller/dashboardController");
-const { getActivePromotions, getInactivePromotions, addPromotion ,updatePromotion, deletePromotion, getAllPromotionsWithUsage, getAllPromotions} = require("../controllers/admin-controller/promotionController");  
+const { getActivePromotions, getInactivePromotions, addPromotion ,updatePromotion, deletePromotion, getAllPromotionsWithUsage, getAllPromotions, updatePromotionStatus} = require("../controllers/admin-controller/promotionController");  
 const { getAllRegions, addRegion, updateRegion, deleteRegion } = require("../controllers/admin-controller/regionController");
+const { handleFileUpload } = require("../middlewares/uploads");
 
 // User Routes
 router.get("/users", checkAdmin,getAllUsers);  //working
@@ -45,9 +46,10 @@ router.get('/drivers/inactive', checkAdmin, getInactiveDrivers);    //working
 router.get('/promotions/active',checkAdmin, getActivePromotions);  //working
 router.get('/promotions', getAllPromotions);  //working
 router.get('/promotions/inactive', checkAdmin, getInactivePromotions);  //working
-router.post('/promotions', addPromotion);  //working
-router.put('/promotions/:id', checkAdmin, updatePromotion);  //working
-router.delete('/promotions/:id', checkAdmin, deletePromotion);  //working
+router.post('/promotions', handleFileUpload,addPromotion);  //working
+router.put('/promotions/:id', handleFileUpload, updatePromotion);  //working
+router.put('/promotionStatus/:id', updatePromotionStatus);  //working
+router.delete('/promotions/:id', deletePromotion);  //working
 router.get('/promotions/usage', getAllPromotionsWithUsage);  //working
 
 

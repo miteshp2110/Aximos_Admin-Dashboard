@@ -1,4 +1,5 @@
 const { pool } = require("../../config/db");
+const { deleteFile } = require("../../middlewares/uploads");
 
 // Add new promotion
 const addPromotion = async (req, res) => {
@@ -11,9 +12,12 @@ const addPromotion = async (req, res) => {
         coupon_code,
         valid_from,
         valid_to,
-        promotionImageUrl,
         is_active
     } = req.body;
+
+    const fileName = req.imageName
+    const promotionImageUrl = fileName
+
 
     if (!title || !description || (!discount_percentage && !fixed_discount) || !coupon_code || !valid_from || !valid_to) {
         return res.status(400).json({ success: false, message: "Missing required promotion fields" });
@@ -41,6 +45,8 @@ const addPromotion = async (req, res) => {
         );
         res.status(201).json({ success: true, message: "Promotion added successfully" });
     } catch (err) {
+        const splits = fileName.split("/")
+        deleteFile(splits[splits.length -1])
         console.error(err);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     } finally {
@@ -98,9 +104,10 @@ const updatePromotion = async (req, res) => {
         coupon_code,
         valid_from,
         valid_to,
-        promotionImageUrl,
         is_active
     } = req.body;
+    const fileName = req.imageName
+    const promotionImageUrl = fileName
 
     if (!id) {
         return res.status(400).json({ success: false, message: "Promotion ID is required" });
@@ -109,34 +116,66 @@ const updatePromotion = async (req, res) => {
     let connection;
     try {
         connection = await pool.getConnection();
-        const [result] = await connection.query(
-            `UPDATE promotions 
-             SET 
-                title = ?, 
-                description = ?, 
-                discount_percentage = ?, 
-                fixed_discount = ?, 
-                threshHold = ?, 
-                coupon_code = ?, 
-                valid_from = ?, 
-                valid_to = ?, 
-                promotionImageUrl = ?, 
-                is_active = ?
-             WHERE id = ?`,
-            [
-                title,
-                description,
-                discount_percentage || null,
-                fixed_discount || null,
-                threshHold || null,
-                coupon_code,
-                valid_from,
-                valid_to,
-                promotionImageUrl || null,
-                is_active !== undefined ? is_active : 1,
-                id
-            ]
-        );
+
+        if (promotionImageUrl){
+            var [result] = await connection.query(
+                `UPDATE promotions 
+                 SET 
+                    title = ?, 
+                    description = ?, 
+                    discount_percentage = ?, 
+                    fixed_discount = ?, 
+                    threshHold = ?, 
+                    coupon_code = ?, 
+                    valid_from = ?, 
+                    valid_to = ?, 
+                    promotionImageUrl = ?, 
+                    is_active = ?
+                 WHERE id = ?`,
+                [
+                    title,
+                    description,
+                    discount_percentage || null,
+                    fixed_discount || null,
+                    threshHold || null,
+                    coupon_code,
+                    valid_from,
+                    valid_to,
+                    promotionImageUrl || null,
+                    is_active !== undefined ? is_active : 1,
+                    id
+                ]
+            );
+        }
+        else{
+            var [result] = await connection.query(
+                `UPDATE promotions 
+                 SET 
+                    title = ?, 
+                    description = ?, 
+                    discount_percentage = ?, 
+                    fixed_discount = ?, 
+                    threshHold = ?, 
+                    coupon_code = ?, 
+                    valid_from = ?, 
+                    valid_to = ?,  
+                    is_active = ?
+                 WHERE id = ?`,
+                [
+                    title,
+                    description,
+                    discount_percentage || null,
+                    fixed_discount || null,
+                    threshHold || null,
+                    coupon_code,
+                    valid_from,
+                    valid_to,
+                    is_active !== undefined ? is_active : 1,
+                    id
+                ]
+            );
+        }
+        
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ success: false, message: "Promotion not found" });
@@ -162,6 +201,11 @@ const deletePromotion = async (req, res) => {
     let connection;
     try {
         connection = await pool.getConnection();
+
+        const [isUsed] = await connection.query("select count(id) as total from orders where promotion_id = ?", [id])
+        if (isUsed[0].total > 0) {
+            return res.status(400).json({ success: false, message: "Promotion is used in orders and cannot be deleted" });
+        }
         const [result] = await connection.query("DELETE FROM promotions WHERE id = ?", [id]);
 
         if (result.affectedRows === 0) {
@@ -210,20 +254,6 @@ const getAllPromotionsWithUsage = async (req, res) => {
     }
 };
 
-// {
-//     id: 1,
-//     name: "Welcome Discount",
-//     description: "20% off your first order",
-//     minOrderValue: 0,
-//     code: "WELCOME20",
-//     startDate: "2023-04-01",
-//     endDate: "2023-06-30",
-//     image: "/placeholder.svg?height=660&width=350",
-//     isActive: true,
-//     type: "percentage",
-//     value: 20,
-//   },
-// Get all active promotions (is_active = 1)
 const getAllPromotions = async (req, res) => {
     let connection;
     try {
@@ -251,6 +281,42 @@ const getAllPromotions = async (req, res) => {
     }
 };
 
+const updatePromotionStatus = async (req, res) => {
+    const { id } = req.params;
+    const {
+        is_active
+    } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ success: false, message: "Promotion ID is required" });
+    }
+
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const [result] = await connection.query(
+            `UPDATE promotions 
+             SET 
+                is_active = ?
+             WHERE id = ?`,
+            [
+                is_active !== undefined ? is_active : 1,
+                id
+            ]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: "Promotion not found" });
+        }
+
+        res.json({ success: true, message: "Promotion updated successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
+    }
+};
 
 
 
@@ -261,5 +327,6 @@ module.exports = {
     updatePromotion,
     deletePromotion,
     getAllPromotionsWithUsage,
-    getAllPromotions
+    getAllPromotions,
+    updatePromotionStatus
 };
