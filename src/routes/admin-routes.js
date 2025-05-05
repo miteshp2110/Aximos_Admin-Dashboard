@@ -6,22 +6,15 @@ const checkAdmin = require("../middlewares/checkAdmin");
 // Import controllers
 const { getAllUsers, updateUserStatus ,getTotalUsers} = require("../controllers/admin-controller/userController");
 const { getAllServices, addService } = require("../controllers/admin-controller/serviceController");
-<<<<<<< HEAD
-const { getAllOrders, updateOrderStatus, getTotalOrders, getTotalRevenue,getRecentOrders, getTodaysPickups, getFormattedOrders } = require("../controllers/admin-controller/orderController");
-const { addDriver, getAllDrivers, updateDriverStatus ,getActiveDrivers, getInactiveDrivers} = require("../controllers/admin-controller/driverController");
-const {getStats} = require("../controllers/admin-controller/dashboardController");
-const { getActivePromotions, getInactivePromotions, addPromotion ,updatePromotion, deletePromotion, getAllPromotionsWithUsage,getPromotionSummary} = require("../controllers/admin-controller/promotionController");  
-=======
 const { getAllOrders, updateOrderStatus, getTotalOrders, getTotalRevenue,getRecentOrders, getTodaysPickups, getAllOrdersDetailed } = require("../controllers/admin-controller/orderController");
 const { addDriver, getAllDrivers, updateDriverStatus ,getActiveDrivers, getInactiveDrivers, updateDriver} = require("../controllers/admin-controller/driverController");
 const {getStats} = require("../controllers/admin-controller/dashboardController");
-const { getActivePromotions, getInactivePromotions, addPromotion ,updatePromotion, deletePromotion, getAllPromotionsWithUsage, getAllPromotions} = require("../controllers/admin-controller/promotionController");  
->>>>>>> c95d5c78b2539702833674850754f4feb6ef3225
+const { getActivePromotions, getInactivePromotions, addPromotion ,updatePromotion, deletePromotion, getAllPromotionsWithUsage} = require("../controllers/admin-controller/promotionController");  
 const { getAllRegions, addRegion, updateRegion, deleteRegion } = require("../controllers/admin-controller/regionController");
 const { ro } = require("date-fns/locale");
 
-// User Routes
-router.get("/users",checkAdmin,getAllUsers);  //working
+// User Routes 
+router.get("/users",getAllUsers);  //working
 router.get('/total-users',checkAdmin, getTotalUsers);  //working
 // router.put("/users/:id", updateUserStatus);  //currently not used in the frontend
 
@@ -52,15 +45,15 @@ router.get('/drivers/inactive', checkAdmin, getInactiveDrivers);    //working
 
 // Promotions Routes
 router.get('/promotions/active',checkAdmin, getActivePromotions);  //working
-router.get('/promotions', getAllPromotions);  //working
+// router.get('/promotions', getAllPromotions);  //working
 router.get('/promotions/inactive', checkAdmin, getInactivePromotions);  //working
 router.post('/promotions', addPromotion);  //working
 router.put('/promotions/:id', checkAdmin, updatePromotion);  //working
 router.delete('/promotions/:id', checkAdmin, deletePromotion);  //working
 router.get('/promotions/usage', getAllPromotionsWithUsage);  //working
-router.get('/promotions-summary', getPromotionSummary);  //working
+// router.get('/promotions-summary', getPromotionSummary);  //working
 
-
+ 
 // Dashboard Stats Route
 router.get("/stats", checkAdmin, getStats);  //working
 

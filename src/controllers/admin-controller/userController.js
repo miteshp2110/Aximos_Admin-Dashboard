@@ -7,22 +7,27 @@ const getAllUsers = async (req, res) => {
         connection = await pool.getConnection();
         const [users] = await connection.query(`
             SELECT 
-                u.id, 
-                u.fullName, 
-                u.email, 
-                u.phone, 
-                u.createdAt, 
-                IFNULL(SUM(oi.quantity), 0) AS total_orders,
-                IFNULL(SUM(i.price * oi.quantity), 0) AS total_spent,
-                CASE
-                    WHEN u.id IN (SELECT user_id FROM orders WHERE order_status = (SELECT id FROM order_status_names WHERE statusName = 'Inactive')) THEN 'Inactive'
-                    ELSE 'Active'
-                END AS status
-            FROM users u
-            LEFT JOIN orders o ON u.id = o.user_id
-            LEFT JOIN order_items oi ON o.id = oi.order_id
-            LEFT JOIN items i ON oi.item_id = i.id
-            GROUP BY u.id
+            u.id, 
+            u.fullName, 
+            u.email, 
+            u.phone, 
+            u.createdAt, 
+            COUNT(DISTINCT o.id) AS total_orders,
+            IFNULL(SUM(o.order_total), 0) AS total_spent,
+            CASE
+                WHEN NOT EXISTS (
+                    SELECT 1
+                    FROM orders o2
+                    WHERE o2.user_id = u.id
+                    AND o2.order_status != (
+                        SELECT id FROM order_status_names WHERE statusName = 'Inactive'
+                    )
+                ) THEN 'Inactive'
+                ELSE 'Active'
+            END AS status
+        FROM users u
+        LEFT JOIN orders o ON u.id = o.user_id
+        GROUP BY u.id;
         `); // Get total orders, total spent, and status
 
         res.json({ success: true, data: users });
