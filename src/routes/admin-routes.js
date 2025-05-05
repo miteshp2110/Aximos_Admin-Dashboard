@@ -12,10 +12,11 @@ const {getStats} = require("../controllers/admin-controller/dashboardController"
 const { getActivePromotions, getInactivePromotions, addPromotion ,updatePromotion, deletePromotion, getAllPromotionsWithUsage, getAllPromotions, updatePromotionStatus} = require("../controllers/admin-controller/promotionController");  
 const { getAllRegions, addRegion, updateRegion, deleteRegion } = require("../controllers/admin-controller/regionController");
 const { handleFileUpload } = require("../middlewares/uploads");
+const { ro } = require("date-fns/locale");
 
-// User Routes
-router.get("/users", checkAdmin,getAllUsers);  //working
-router.get('/total-users', getTotalUsers);  //working
+// User Routes 
+router.get("/users",getAllUsers);  //working
+router.get('/total-users',checkAdmin, getTotalUsers);  //working
 // router.put("/users/:id", updateUserStatus);  //currently not used in the frontend
 
 
@@ -31,7 +32,8 @@ router.get('/total-orders',getTotalOrders);    //working
 router.get('/orders-total-revenue',getTotalRevenue);    //working
 router.get('/orders-recent', getRecentOrders);  //working
 router.get('/orders/today-pickups',checkAdmin, getTodaysPickups);   //working
-
+// router.get('/orders-formatted', getFormattedOrders); //working
+ 
 // Driver Routes 
 router.post("/addDriver",  addDriver); //working
 router.get("/drivers",getAllDrivers);  //working
@@ -40,19 +42,20 @@ router.put("/updateDriver/:id", updateDriver); //working
 router.get('/active-drivers', getActiveDrivers);    //working
 router.get('/drivers/inactive', checkAdmin, getInactiveDrivers);    //working
 
-
+ 
 
 // Promotions Routes
 router.get('/promotions/active',checkAdmin, getActivePromotions);  //working
-router.get('/promotions', getAllPromotions);  //working
+// router.get('/promotions', getAllPromotions);  //working
 router.get('/promotions/inactive', checkAdmin, getInactivePromotions);  //working
 router.post('/promotions', handleFileUpload,addPromotion);  //working
 router.put('/promotions/:id', handleFileUpload, updatePromotion);  //working
 router.put('/promotionStatus/:id', updatePromotionStatus);  //working
 router.delete('/promotions/:id', deletePromotion);  //working
 router.get('/promotions/usage', getAllPromotionsWithUsage);  //working
+// router.get('/promotions-summary', getPromotionSummary);  //working
 
-
+ 
 // Dashboard Stats Route
 router.get("/stats", checkAdmin, getStats);  //working
 
@@ -62,6 +65,6 @@ router.post("/regions", addRegion); //working
 router.put("/regions/:id", updateRegion); //working
 router.delete("/regions/:id", deleteRegion); //working
 
-
+ 
 
 module.exports = router;
