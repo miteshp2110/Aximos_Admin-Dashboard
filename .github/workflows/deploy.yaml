@@ -20,5 +20,5 @@ jobs:
         script: |
           cd /home/admin-backend/Aximos_Admin-Dashboard
           git pull origin main
-          npm install
-          pm2 restart 2
+          /root/.nvm/versions/node/v23.11.0/bin/npm install
+          /root/.nvm/versions/node/v23.11.0/bin/pm2 restart 2
