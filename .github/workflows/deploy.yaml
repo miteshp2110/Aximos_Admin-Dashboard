@@ -18,7 +18,6 @@ jobs:
         password: ${{ secrets.VM_PASSWORD }}
         port: 22
         script: |
-          sudo su
           cd /home/admin-backend/Aximos_Admin-Dashboard
           git pull origin main
           npm install
