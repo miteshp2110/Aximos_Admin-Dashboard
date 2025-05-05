@@ -1,0 +1,24 @@
+name: Deploy to VM on Push
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy via SSH with password
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USER }}
+        password: ${{ secrets.VM_PASSWORD }}
+        port: 22
+        script: |
+          cd /home/admin-backend/Aximos_Admin-Dashboard
+          git pull origin main
+          npm install
+          pm2 restart 2

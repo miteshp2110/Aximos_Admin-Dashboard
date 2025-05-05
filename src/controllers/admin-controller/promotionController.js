@@ -209,6 +209,49 @@ const getAllPromotionsWithUsage = async (req, res) => {
         if (connection) connection.release();
     }
 };
+
+// {
+//     id: 1,
+//     name: "Welcome Discount",
+//     description: "20% off your first order",
+//     minOrderValue: 0,
+//     code: "WELCOME20",
+//     startDate: "2023-04-01",
+//     endDate: "2023-06-30",
+//     image: "/placeholder.svg?height=660&width=350",
+//     isActive: true,
+//     type: "percentage",
+//     value: 20,
+//   },
+// Get all active promotions (is_active = 1)
+const getAllPromotions = async (req, res) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const [promotions] = await connection.query(
+            `SELECT id, title as name, description, discount_percentage, fixed_discount, threshHold as minOrderValue, coupon_code as code, valid_from as startDate, valid_to as endDate, promotionImageUrl as image, is_active as isActive FROM promotions`
+        );
+
+        promotions.forEach(promotion => {
+            promotion.isActive = promotion.isActive === 1 ? true : false;
+            promotion.startDate = new Date(promotion.startDate).toISOString().split("T")[0];
+            promotion.endDate = new Date(promotion.endDate).toISOString().split("T")[0];
+            promotion.minOrderValue = parseInt(promotion.minOrderValue || 0);
+            promotion.type = promotion.discount_percentage ? "percentage" : "fixed";
+            promotion.value = parseInt(promotion.discount_percentage || promotion.fixed_discount)
+            delete promotion.discount_percentage;
+            delete promotion.fixed_discount;
+        })
+        res.json({ success: true, data: promotions });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
+    }
+};
+
+
 // Get all promotions with selected fields (name, code, discount, validity)
 const getPromotionSummary = async (req, res) => {
     let connection;
@@ -240,6 +283,5 @@ module.exports = {
     addPromotion,
     updatePromotion,
     deletePromotion,
-    getAllPromotionsWithUsage,
-    getPromotionSummary
+    getAllPromotionsWithUsage
 };

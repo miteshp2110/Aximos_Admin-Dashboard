@@ -6,10 +6,17 @@ const checkAdmin = require("../middlewares/checkAdmin");
 // Import controllers
 const { getAllUsers, updateUserStatus ,getTotalUsers} = require("../controllers/admin-controller/userController");
 const { getAllServices, addService } = require("../controllers/admin-controller/serviceController");
+<<<<<<< HEAD
 const { getAllOrders, updateOrderStatus, getTotalOrders, getTotalRevenue,getRecentOrders, getTodaysPickups, getFormattedOrders } = require("../controllers/admin-controller/orderController");
 const { addDriver, getAllDrivers, updateDriverStatus ,getActiveDrivers, getInactiveDrivers} = require("../controllers/admin-controller/driverController");
 const {getStats} = require("../controllers/admin-controller/dashboardController");
 const { getActivePromotions, getInactivePromotions, addPromotion ,updatePromotion, deletePromotion, getAllPromotionsWithUsage,getPromotionSummary} = require("../controllers/admin-controller/promotionController");  
+=======
+const { getAllOrders, updateOrderStatus, getTotalOrders, getTotalRevenue,getRecentOrders, getTodaysPickups, getAllOrdersDetailed } = require("../controllers/admin-controller/orderController");
+const { addDriver, getAllDrivers, updateDriverStatus ,getActiveDrivers, getInactiveDrivers, updateDriver} = require("../controllers/admin-controller/driverController");
+const {getStats} = require("../controllers/admin-controller/dashboardController");
+const { getActivePromotions, getInactivePromotions, addPromotion ,updatePromotion, deletePromotion, getAllPromotionsWithUsage, getAllPromotions} = require("../controllers/admin-controller/promotionController");  
+>>>>>>> c95d5c78b2539702833674850754f4feb6ef3225
 const { getAllRegions, addRegion, updateRegion, deleteRegion } = require("../controllers/admin-controller/regionController");
 const { ro } = require("date-fns/locale");
 
@@ -25,6 +32,7 @@ router.post("/services", checkAdmin, addService); //working
 
 // Order Routes
 router.get("/orders",getAllOrders); //working
+router.get("/orders/detail",getAllOrdersDetailed); //working
 router.put("/orders/:id", checkAdmin, updateOrderStatus); //working
 router.get('/total-orders',getTotalOrders);    //working
 router.get('/orders-total-revenue',getTotalRevenue);    //working
@@ -33,9 +41,10 @@ router.get('/orders/today-pickups',checkAdmin, getTodaysPickups);   //working
 // router.get('/orders-formatted', getFormattedOrders); //working
  
 // Driver Routes 
-router.post("/addDriver", checkAdmin, addDriver); //working
-router.get("/drivers", checkAdmin,getAllDrivers);  //working
-router.put("/drivers/:id", checkAdmin, updateDriverStatus); //working
+router.post("/addDriver",  addDriver); //working
+router.get("/drivers",getAllDrivers);  //working
+router.put("/drivers/:id", updateDriverStatus); //working
+router.put("/updateDriver/:id", updateDriver); //working
 router.get('/active-drivers', getActiveDrivers);    //working
 router.get('/drivers/inactive', checkAdmin, getInactiveDrivers);    //working
 
@@ -43,8 +52,9 @@ router.get('/drivers/inactive', checkAdmin, getInactiveDrivers);    //working
 
 // Promotions Routes
 router.get('/promotions/active',checkAdmin, getActivePromotions);  //working
+router.get('/promotions', getAllPromotions);  //working
 router.get('/promotions/inactive', checkAdmin, getInactivePromotions);  //working
-router.post('/promotions', checkAdmin, addPromotion);  //working
+router.post('/promotions', addPromotion);  //working
 router.put('/promotions/:id', checkAdmin, updatePromotion);  //working
 router.delete('/promotions/:id', checkAdmin, deletePromotion);  //working
 router.get('/promotions/usage', getAllPromotionsWithUsage);  //working
@@ -56,8 +66,8 @@ router.get("/stats", checkAdmin, getStats);  //working
 
 // Region Routes
 router.get("/regions", getAllRegions); //working
-router.post("/regions", checkAdmin, addRegion); //working
-router.put("/regions/:id", checkAdmin, updateRegion); //working
+router.post("/regions", addRegion); //working
+router.put("/regions/:id", updateRegion); //working
 router.delete("/regions/:id", deleteRegion); //working
 
  
