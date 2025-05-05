@@ -19,6 +19,7 @@ jobs:
         port: 22
         script: |
           cd /home/admin-backend/Aximos_Admin-Dashboard
+          git pull origin main
           export PATH="/root/.nvm/versions/node/v23.11.0/bin:$PATH"
           npm install
           pm2 restart 2
