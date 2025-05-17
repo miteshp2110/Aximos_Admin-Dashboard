@@ -14,7 +14,7 @@ const { getAllRegions, addRegion, updateRegion, deleteRegion } = require("../con
 const { handleFileUpload } = require("../middlewares/uploads");
 
 // User Routes
-router.get("/users", checkAdmin,getAllUsers);  //working
+router.get("/users",checkAdmin, getAllUsers);  //working
 router.get('/total-users', getTotalUsers);  //working
 // router.put("/users/:id", updateUserStatus);  //currently not used in the frontend
 
