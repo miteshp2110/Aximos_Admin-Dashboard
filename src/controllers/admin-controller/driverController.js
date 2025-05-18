@@ -1,5 +1,36 @@
 const { pool } = require("../../config/db");
 
+// Get driver revenue grouped by region
+const getDriverRevenueByRegion = async (req, res) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+
+        const [results] = await connection.query(`
+            SELECT 
+                v.id AS driverId,
+                v.van_number AS regNo,
+                v.phone AS phone,
+                r.id AS regionId,
+                r.name AS regionName,
+                COALESCE(SUM(o.order_total), 0) AS totalRevenue
+            FROM vans v
+            JOIN regions r ON v.region_id = r.id
+            LEFT JOIN orders o ON v.id = o.van_id
+            GROUP BY v.id, r.id
+            ORDER BY totalRevenue DESC;
+        `);
+
+        res.json({ success: true, data: results });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
+    }
+};
+
+
 const addDriver = async (req, res) => {
     const { region_id, van_number, phone, status } = req.body;
 
@@ -113,5 +144,6 @@ module.exports = {
     getActiveDrivers,
     getInactiveDrivers,
     addDriver,
-    updateDriver
+    updateDriver,
+    getDriverRevenueByRegion
 };

@@ -1,6 +1,66 @@
 const { pool } = require("../../config/db");
 const { formatDistanceToNow } = require("date-fns");
 
+
+// Update cash order status
+const updateCashOrderStatus = async (req, res) => {
+    const { orderId } = req.params;
+    const { new_status } = req.body;
+
+    const allowedStatuses = ['orderPlaced', 'orderPickedUp', 'outForDelivery', 'Delivered'];
+    if (!allowedStatuses.includes(new_status)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid status. Must be one of: " + allowedStatuses.join(', ')
+        });
+    }
+
+    let connection;
+    try {
+        connection = await pool.getConnection();
+
+        // Get status ID from order_status_names table
+        const [statusResult] = await connection.query(
+            "SELECT id FROM order_status_names WHERE statusName = ?",
+            [new_status]
+        );
+
+        if (statusResult.length === 0) {
+            return res.status(400).json({ success: false, message: "Invalid status name" });
+        }
+
+        const statusId = statusResult[0].id;
+
+        // Check if order exists and is cash
+        const [orderResult] = await connection.query(
+            "SELECT * FROM orders WHERE id = ? AND payment_mode = 'cash'",
+            [orderId]
+        );
+
+        if (orderResult.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Order not found or not a cash payment"
+            });
+        }
+
+        // Update the order status
+        await connection.query(
+            "UPDATE orders SET order_status = ? WHERE id = ?",
+            [statusId, orderId]
+        );
+
+        res.json({ success: true, message: "Order status updated successfully" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
+    }
+};
+
+
 // Get all orders for orderes page
 const getAllOrdersDetailed = async (req, res) => {
     let connection;
@@ -211,5 +271,6 @@ module.exports = {
     getTotalRevenue,
     getRecentOrders,
     getTodaysPickups,
-    getAllOrdersDetailed
+    getAllOrdersDetailed,
+    updateCashOrderStatus
 };
