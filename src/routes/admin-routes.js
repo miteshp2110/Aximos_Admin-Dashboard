@@ -5,23 +5,32 @@ const checkAdmin = require("../middlewares/checkAdmin");
 
 // Import controllers
 const { getAllUsers, updateUserStatus ,getTotalUsers} = require("../controllers/admin-controller/userController");
-const { getAllServices, addService } = require("../controllers/admin-controller/serviceController");
+const { getAllServices, addService,addNewCategory, deleteCategory, updateCategory, addItem, deleteItem, updateItem, deleteService, updateServiceStatus, updateService } = require("../controllers/admin-controller/serviceController");
 const { getAllOrders, updateOrderStatus, getTotalOrders, getTotalRevenue,getRecentOrders, getTodaysPickups, getAllOrdersDetailed } = require("../controllers/admin-controller/orderController");
 const { addDriver, getAllDrivers, updateDriverStatus ,getActiveDrivers, getInactiveDrivers, updateDriver} = require("../controllers/admin-controller/driverController");
 const {getStats} = require("../controllers/admin-controller/dashboardController");
 const { getActivePromotions, getInactivePromotions, addPromotion ,updatePromotion, deletePromotion, getAllPromotionsWithUsage, getAllPromotions, updatePromotionStatus} = require("../controllers/admin-controller/promotionController");  
 const { getAllRegions, addRegion, updateRegion, deleteRegion } = require("../controllers/admin-controller/regionController");
-const { handleFileUpload } = require("../middlewares/uploads");
+const { handleFileUpload, handleMultipleUpload } = require("../middlewares/uploads");
 
 // User Routes
-router.get("/users", checkAdmin,getAllUsers);  //working
+router.get("/users",getAllUsers);  //working
 router.get('/total-users', getTotalUsers);  //working
 // router.put("/users/:id", updateUserStatus);  //currently not used in the frontend
 
 
 // Service Routes
-router.get("/services",checkAdmin, getAllServices); //working
-router.post("/services", checkAdmin, addService); //working
+router.get("/services", getAllServices); //working
+router.post("/services",handleMultipleUpload, addService); //working
+router.delete("/services/:id", deleteService); //working
+router.put("/services/:id",handleMultipleUpload, updateService); //working
+router.put("/services/status/:id", updateServiceStatus); //working
+router.post("/services/category", addNewCategory); //working
+router.delete("/category/:id", deleteCategory); //working
+router.put("/category/:id", updateCategory); //working
+router.post("/item",handleFileUpload, addItem); //working
+router.delete("/item/:id",deleteItem)
+router.put("/item/:id",handleFileUpload, updateItem); //working
 
 // Order Routes
 router.get("/orders",getAllOrders); //working
