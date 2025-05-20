@@ -252,3 +252,13 @@ CREATE TABLE IF NOT EXISTS admin (
 
 -- Re‐enable FK checks
 SET FOREIGN_KEY_CHECKS = 1;
+
+CREATE TABLE settings(
+  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  bussinessName VARCHAR(255) NOT NULL,
+  bussinessEmail VARCHAR(255) NOT NULL,
+  bussinessPhone VARCHAR(15) NOT NULL,
+  bussinessAddress VARCHAR(255) NOT NULL,
+  bussinessWebsite VARCHAR(255) NOT NULL,
+  bussinessDescription TEXT NOT NULL
+);

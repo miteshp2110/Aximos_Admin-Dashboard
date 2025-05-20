@@ -18,6 +18,7 @@ app.use(cors())
 //Routes
 app.use("/test",(req,res)=>{return res.send("Working Routes with actions")})
 app.use("/auth",require('./routes/auth-routes')) //auth routes
+app.use("/settings",require('./routes/setting-routes')) //settings routes
 
 app.use("/admin", require('./routes/admin-routes'));  //admin routes
 
