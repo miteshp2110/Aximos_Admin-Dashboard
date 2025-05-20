@@ -24,6 +24,17 @@ router.get("/services",checkAdmin, getAllServices); //working
 router.post("/services", checkAdmin, addService); //working
 router.get("/services/revenue", getRevenueByServiceType); //working
 
+router.get("/services", getAllServices); //working
+router.post("/services",handleMultipleUpload, addService); //working
+router.delete("/services/:id", deleteService); //working
+router.put("/services/:id",handleMultipleUpload, updateService); //working
+router.put("/services/status/:id", updateServiceStatus); //working
+router.post("/services/category", addNewCategory); //working
+router.delete("/category/:id", deleteCategory); //working
+router.put("/category/:id", updateCategory); //working
+router.post("/item",handleFileUpload, addItem); //working
+router.delete("/item/:id",deleteItem)
+router.put("/item/:id",handleFileUpload, updateItem); //working
 
 // Order Routes
 router.get("/orders",getAllOrders); //working
