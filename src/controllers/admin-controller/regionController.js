@@ -1,6 +1,71 @@
 // controllers/regionController.js
 const { pool } = require("../../config/db");
 
+// Get total vans per region
+const getVanCountByRegion = async (req, res) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const [rows] = await connection.query(`
+            SELECT 
+                r.name AS region_name,
+                COUNT(v.id) AS van_count
+            FROM regions r
+            LEFT JOIN vans v ON r.id = v.region_id
+            GROUP BY r.name
+        `);
+
+        res.json({ success: true, data: rows });
+    } catch (err) {
+        console.error("Error fetching van count by region:", err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
+    }
+};
+
+
+// Get revenue grouped by region
+const getRevenueByRegion = async (req, res) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+
+        const [rows] = await connection.query(`
+            SELECT 
+                r.name AS region,
+                SUM(oi.quantity * i.price) AS total_revenue
+            FROM orders o
+            JOIN order_items oi ON o.id = oi.order_id
+            JOIN items i ON oi.item_id = i.id
+            JOIN users u ON o.user_id = u.id
+            JOIN regions r ON u.id = r.id
+            WHERE o.payment_status = 'PAID'
+            GROUP BY r.name
+        `);
+
+        const totalRevenue = rows.reduce((sum, row) => sum + (parseFloat(row.total_revenue) || 0), 0);
+
+        const data = rows.map(row => {
+            const revenue = parseFloat(row.total_revenue) || 0;
+            return {
+                region: row.region,
+                revenue: parseFloat(revenue.toFixed(2)),
+                percentage: parseFloat(((revenue / totalRevenue) * 100).toFixed(1))
+            };
+        });
+
+        res.json({ success: true, data });
+    } catch (err) {
+        console.error("Error fetching revenue by region:", err);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    } finally {
+        if (connection) connection.release();
+    }
+};
+
+
+
 //  Delete region by ID
 const deleteRegion = async (req, res) => {
     const { id } = req.params;
@@ -113,5 +178,7 @@ module.exports = {
     getAllRegions,
     addRegion,
     updateRegion,
-    deleteRegion
+    deleteRegion,
+    getRevenueByRegion,
+    getVanCountByRegion  
 };
