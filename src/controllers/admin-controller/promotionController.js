@@ -1,4 +1,5 @@
 const { pool } = require("../../config/db");
+const { USERBACKEND_URI } = require("../../config/secrets");
 const { deleteFile } = require("../../middlewares/uploads");
 
 // Add new promotion
@@ -43,6 +44,19 @@ const addPromotion = async (req, res) => {
                 is_active !== undefined ? is_active : 1
             ]
         );
+
+        await fetch(`${USERBACKEND_URI}/api/notification/send`,{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                title: "New Offer !!",
+                body: `A new Offer has arrived with the code ${coupon_code}.`,
+                password :"aximos"
+            }),
+        })
+
         res.status(201).json({ success: true, message: "Promotion added successfully" });
     } catch (err) {
         const splits = fileName.split("/")

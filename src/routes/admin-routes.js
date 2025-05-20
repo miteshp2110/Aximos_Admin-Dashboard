@@ -66,7 +66,7 @@ router.get('/promotions/inactive', checkAdmin, getInactivePromotions);  //workin
 router.post('/promotions', handleFileUpload,addPromotion);  //working
 router.put('/promotions/:id', handleFileUpload, updatePromotion);  //working
 router.put('/promotionStatus/:id', updatePromotionStatus);  //working
-router.delete('/promotions/:id', checkAdmin, deletePromotion);  //working
+router.delete('/promotions/:id', deletePromotion);  //working
 router.get('/promotions/usage', getAllPromotionsWithUsage);  //working
 
 // Dashboard Stats Route
