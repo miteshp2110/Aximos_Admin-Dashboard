@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS admin (
   name      VARCHAR(50),
   email     VARCHAR(200),
   password  VARCHAR(255),
-  createdAt TIMESTAMP
+  superAdmin bool DEFAULT false
 ) ENGINE=InnoDB;
 
 -- Re‐enable FK checks

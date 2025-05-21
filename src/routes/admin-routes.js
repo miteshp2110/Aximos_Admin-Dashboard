@@ -1,7 +1,7 @@
 // routes/adminRoutes.js
 const express = require("express");
 const router = express.Router();
-const checkAdmin = require("../middlewares/checkAdmin");
+const {checkAdmin} = require("../middlewares/checkAdmin");
 
 // Import controllers
 const { getAllUsers, updateUserStatus ,getTotalUsers} = require("../controllers/admin-controller/userController");
@@ -20,8 +20,8 @@ router.get('/total-users', getTotalUsers);  //working
 
 
 // Service Routes
-router.get("/services",checkAdmin, getAllServices); //working
-router.post("/services", checkAdmin, addService); //working
+router.get("/services", getAllServices); //working
+router.post("/services", addService); //working
 router.get("/services/revenue", getRevenueByServiceType); //working
 
 router.get("/services", getAllServices); //working
