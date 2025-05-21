@@ -19,6 +19,19 @@ DO
   DELETE FROM otp WHERE created_at < NOW() - INTERVAL 5 MINUTE;
 
 
+CREATE TABLE IF NOT EXISTS email_otp (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  otp INT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE EVENT IF NOT EXISTS delete_expired_otps_email
+ON SCHEDULE EVERY 1 MINUTE
+DO
+  DELETE FROM email_otp WHERE created_at < NOW() - INTERVAL 5 MINUTE;
+
+
 -- 1. regions
 CREATE TABLE IF NOT EXISTS regions (
   id              INT           AUTO_INCREMENT PRIMARY KEY,

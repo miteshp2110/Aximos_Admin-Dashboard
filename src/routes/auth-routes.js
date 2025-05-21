@@ -3,8 +3,9 @@ const login = require("../controllers/auth-controller/login");
 const express = require('express');
 const {checkAdmin,checkSuperAdmin} = require("../middlewares/checkAdmin");
 const updatePassword = require("../controllers/auth-controller/adminUpdatePassword");
-const forgotPassword = require("../controllers/auth-controller/forgotPassword");
+
 const checkOtp = require("../controllers/auth-controller/checkOtp");
+const { forgotPassword } = require("../utils/emailTransporter");
 const router = express.Router()
 
 router.post('/login',login)
