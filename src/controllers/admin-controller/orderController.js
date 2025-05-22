@@ -36,7 +36,7 @@ const getAverageOrderValue = async (req, res) => {
                 IFNULL(SUM(order_total), 0) AS total_revenue,
                 COUNT(*) AS total_orders
             FROM orders
-            WHERE order_status = '4' -- Assuming '4' is the ID for 'Delivered'
+            WHERE order_status = '4' 
         `);
 
         const totalRevenue = result[0].total_revenue;
@@ -281,22 +281,65 @@ const getAllOrders = async (req, res) => {
     }
 };
 
-// Update order status
 const updateOrderStatus = async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.params; // order_id
     const { order_status } = req.body;
     let connection;
+
     try {
         connection = await pool.getConnection();
-        await connection.query("UPDATE orders SET order_status = ? WHERE id = ?", [order_status, id]);
-        res.json({ success: true, message: "Order status updated successfully" });
+
+        // 1. Update the order status in `orders` table
+        await connection.query(
+            "UPDATE orders SET order_status = ? WHERE id = ?",
+            [order_status, id]
+        );
+
+        // 2. Fetch updated amount and status from `orders`
+        const [orderRows] = await connection.query(
+            "SELECT order_total AS amount, order_status FROM orders WHERE id = ?",
+            [id]
+        );
+
+        if (orderRows.length === 0) {
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
+
+        // 3. Fetch items with quantity from `order_items` and names from `items`
+        const [itemsRows] = await connection.query(
+            `
+            SELECT items.name, order_items.quantity
+            FROM order_items
+            JOIN items ON order_items.item_id = items.id
+            WHERE order_items.order_id = ?
+            `,
+            [id]
+        );
+
+        // 4. Construct and return response
+        res.json({
+            success: true,
+            message: "Order status updated successfully",
+            order: {
+                amount: orderRows[0].amount,
+                order_status: orderRows[0].order_status,
+                items: itemsRows.map(row => ({
+                    name: row.name,
+                    quantity: row.quantity
+                }))
+            }
+        });
+
     } catch (err) {
-        console.error(err);
+        console.error("Error updating order status:", err);
         res.status(500).json({ success: false, message: "Internal Server Error" });
     } finally {
         if (connection) connection.release();
     }
 };
+
+
+
 
 // Get today's pickups
 const getTodaysPickups = async (req, res) => {
