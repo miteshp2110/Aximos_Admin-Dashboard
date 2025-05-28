@@ -1,6 +1,45 @@
 const { pool } = require("../../config/db");
 const { formatDistanceToNow } = require("date-fns");
 
+// Pseudocode for controller
+const getRevenueOverview = async (req, res) => {
+  const { timeRange = "daily" } = req.query;
+  let query = "";
+  let params = [];
+
+  if (timeRange === "daily") {
+    // Revenue per day for current month
+    query = `
+        SELECT DATE(createdAt) as date, SUM(order_total) as total_revenue
+        FROM orders
+        WHERE MONTH(createdAt) = MONTH(CURRENT_DATE()) AND YEAR(createdAt) = YEAR(CURRENT_DATE())
+        GROUP BY DATE(createdAt)
+        ORDER BY DATE(createdAt)
+    `;
+    } else if (timeRange === "monthly") {
+    // Revenue per month for current year
+    query = `
+        SELECT MONTH(createdAt) as month, SUM(order_total) as total_revenue
+        FROM orders
+        WHERE YEAR(createdAt) = YEAR(CURRENT_DATE())
+        GROUP BY MONTH(createdAt)
+        ORDER BY MONTH(createdAt)
+    `;
+    } else if (timeRange === "yearly") {
+    // Revenue per year for last 5 years
+    query = `
+        SELECT YEAR(createdAt) as year, SUM(order_total) as total_revenue
+        FROM orders
+        WHERE YEAR(createdAt) >= YEAR(CURRENT_DATE()) - 4
+        GROUP BY YEAR(createdAt)
+        ORDER BY YEAR(createdAt)
+    `;
+    }
+
+  const [rows] = await pool.query(query, params);
+  res.json({ success: true, chartData: rows });
+};
+
 // Get number of orders per day
 const getDailyOrderCount = async (req, res) => {
     let connection;
@@ -441,5 +480,6 @@ module.exports = {
     getLineChartData,
     getOrdersCountByService,
     getAverageOrderValue,
-    getDailyOrderCount
+    getDailyOrderCount,
+    getRevenueOverview
 };

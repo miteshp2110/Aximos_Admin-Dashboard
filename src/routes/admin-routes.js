@@ -6,7 +6,7 @@ const {checkAdmin} = require("../middlewares/checkAdmin");
 // Import controllers
 const { getAllUsers, updateUserStatus ,getTotalUsers} = require("../controllers/admin-controller/userController");
 const { getAllServices, addService, getRevenueByServiceType, updateServiceStatus, addNewCategory, deleteCategory, updateCategory, addItem, deleteItem, updateItem, updateService, deleteService } = require("../controllers/admin-controller/serviceController");
-const { getAllOrders, updateOrderStatus, getTotalOrders, getTotalRevenue,getRecentOrders, getTodaysPickups, getAllOrdersDetailed, updateCashOrderStatus, getLineChartData, getOrdersCountByService,getAverageOrderValue ,getDailyOrderCount} = require("../controllers/admin-controller/orderController");
+const { getAllOrders, updateOrderStatus, getTotalOrders, getTotalRevenue,getRecentOrders, getTodaysPickups, getAllOrdersDetailed, updateCashOrderStatus, getLineChartData, getOrdersCountByService,getAverageOrderValue ,getDailyOrderCount, getRevenueOverview} = require("../controllers/admin-controller/orderController");
 const { addDriver, getAllDrivers, updateDriverStatus ,getActiveDrivers, getInactiveDrivers, updateDriver, getDriverRevenueByRegion} = require("../controllers/admin-controller/driverController");
 const {getStats} = require("../controllers/admin-controller/dashboardController");
 const { getActivePromotions, getInactivePromotions, addPromotion ,updatePromotion, deletePromotion, getAllPromotionsWithUsage, getAllPromotions, updatePromotionStatus} = require("../controllers/admin-controller/promotionController");  
@@ -49,6 +49,8 @@ router.get('/orders/line-chart', getLineChartData)
 router.get('/orders/bar-graph', getOrdersCountByService);  //working
 router.get('/orders/average-order-value', getAverageOrderValue);  //working
 router.get('/orders/daily-order-count', getDailyOrderCount);  //working
+router.get('/orders/line-chart', getRevenueOverview);  //working
+
 
 // Driver Routes 
 router.post("/addDriver",  addDriver); //working
